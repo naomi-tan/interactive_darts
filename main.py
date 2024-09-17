@@ -19,5 +19,9 @@ while True:
     if cv.waitKey(1) == ord('q'):
         break
 
+    if cv.waitKey(1) == ord('c'):
+        cv.imwrite("calib/calibration_frame1.png", frame)
+        break
+
 cap.release()
 cv.destroyAllWindows()
