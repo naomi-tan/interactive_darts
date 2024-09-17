@@ -1,3 +1,23 @@
-import cv2
+import cv2 as cv
 
-print(cv2.__version__)
+print(cv.__version__)
+
+cap = cv.VideoCapture(0)
+
+if not cap.isOpened():
+    print("Cannot open camera")
+    exit()
+
+while True:
+    ret, frame = cap.read()
+    cv.imshow('frame', frame)
+
+    if not ret:
+        print("Can't receive frame")
+        break
+
+    if cv.waitKey(1) == ord('q'):
+        break
+
+cap.release()
+cv.destroyAllWindows()
