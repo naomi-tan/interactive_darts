@@ -1,9 +1,8 @@
 import cv2 as cv
 
 
-def list_camera_indexes():
+def list_camera_indexes(limit = 10):
     # return valid camera indexes, limit 10
-    limit = 10
     camera_indexes = []
 
     for i in range(limit):
@@ -14,7 +13,8 @@ def list_camera_indexes():
     return camera_indexes
 
 
-def capture_calibration_image(index):
+def capture_calibration_image(index = 0):
+    # open camera session and save image to file on key press
     cap = cv.VideoCapture(index)
     if not cap.isOpened():
         print("Cannot open camera")
