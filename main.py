@@ -40,20 +40,17 @@ def capture_calibration_image(index = 0):
     cv.destroyAllWindows()
 
 
-def circle_detection():
+def detect_circles(img_path):
     # detect circles in calibration image
-    main_path = os.path.abspath(__file__)
-    img_path = os.path.join(os.path.dirname(main_path), "calib\\calibration_frame1.png")
-    print(img_path)
-
     img = cv.imread(img_path, cv.IMREAD_GRAYSCALE) # Hough circle detection must be grayscale
+    img = cv.medianBlur(img, 5)
     cv.imshow('calibration image', img)
 
     cimg = cv.cvtColor(img, cv.COLOR_GRAY2BGR)
 
-    circles  = cv.HoughCircles(img, cv.HOUGH_GRADIENT, 1, 20, param1=100, param2=90, minRadius=0, maxRadius=0)
+    circles  = cv.HoughCircles(img, cv.HOUGH_GRADIENT, 1, 20, param1=100, param2=60, minRadius=0, maxRadius=0)
     circles = np.uint16(np.around(circles))
-    print(f'{len(circles[0])} circles detected')
+    print(f'{len(circles[0])} circles image')
 
     for i in circles[0,:]:
         # draw outer circle
@@ -67,6 +64,28 @@ def circle_detection():
     cv.destroyAllWindows()
 
 
+def fit_ellipse(img_path):
+    # fit ellipse to calibration image
+    img = cv.imread(img_path, cv.IMREAD_GRAYSCALE) # fit ellipse must be grayscale
+    h, w = img.shape[:2]
+    print(f'height: {h}, width: {w}')
+    img = cv.medianBlur(img, 5)
+    ret, thresh = cv.threshold(img, 150, 255, 0) # 111/227 200
+    contours, hierarchy = cv.findContours(thresh, 1, 2)
+    cnt = contours[0]
+    m = cv.moments(cnt)
+    # print(m)
+    cv.imshow('calibration image', img)
+
+    ellipse = cv.fitEllipse(cnt)
+    cv.ellipse(img, ellipse, (255, 0, 0), 2)
+    cv.imshow('ellipse image', img)
+    print(ellipse)
+
+    cv.waitKey(0)
+    cv.destroyAllWindows()
+
+
 def main():
     print(cv.__version__)
 
@@ -75,7 +94,15 @@ def main():
 
     # capture_calibration_image(0)
 
-    circle_detection()
+    main_path = os.path.abspath(__file__)
+    img_path = os.path.join(os.path.dirname(main_path), "calib\\calibration_frame1.png")
+    print(img_path)
+
+    # this is not a good way to detect dart board circles at an angle as they will be an ellipse
+    # detect_circles(img_path)
+
+    # not sure how to set thresholds/parameters, not picking up the right ellipse
+    fit_ellipse(img_path)
 
 
 if __name__ == "__main__":
