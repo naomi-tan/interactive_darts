@@ -93,6 +93,21 @@ def blob_detection(img):
 
     cv.imshow('blob detection', blobs)
 
+def adjust_image(img):
+    # adjust image brightness and contrast
+    new_img = np.zeros(img.shape, img.dtype)
+
+    alpha = 3  # contrast
+    beta = 0  # brightness
+
+    for y in range(img.shape[0]):
+        for x in range(img.shape[1]):
+            for c in range(img.shape[2]):
+                new_img[y, x, c] = np.clip(alpha*img[y, x, c] + beta, 0, 255)
+
+    cv.imshow('adjusted image', new_img)
+    return new_img
+
 
 def main():
     print(cv.__version__)
@@ -106,7 +121,8 @@ def main():
     img_path = os.path.join(os.path.dirname(main_path), "calib\\calibration_frame1.png")
     print(img_path)
 
-    img = cv.imread(img_path, cv.IMREAD_GRAYSCALE)  # Hough circle detection must be grayscale
+    img = cv.imread(img_path)  # Hough circle detection must be grayscale
+    # img = cv.imread(img_path, cv.IMREAD_GRAYSCALE)  # Hough circle detection must be grayscale
     img = cv.medianBlur(img, 5)
     cv.imshow('calibration image', img)
 
@@ -119,7 +135,9 @@ def main():
     # not sure how to set thresholds/parameters, not picking up the right ellipse
     # fit_ellipse(img)
 
-    blob_detection(img)
+    new_img = adjust_image(img)
+
+    blob_detection(new_img)
 
     cv.waitKey(0)
     cv.destroyAllWindows()
