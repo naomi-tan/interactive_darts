@@ -1,24 +1,38 @@
 import cv2 as cv
 
 
-def list_camera_indexes(limit = 10):
-    # return valid camera indexes, limit 10
-    camera_indexes = []
+def list_camera_indexes(limit: int = 10) -> list[int]:
+    """
+    get list of valid indexes of cameras connected
+    :param limit: search camera index limit, default value 10
+    :return: valid camera indexes
+    """
+    camera_indexes: list[int] = []
 
     for i in range(limit):
-        cap = cv.VideoCapture(i)
-        if cap.read()[0]:
-            camera_indexes.append(i)
-            cap.release()
+        try:
+            cap = cv.VideoCapture(i)
+            if cap.read()[0]:
+                camera_indexes.append(i)
+                cap.release()
+            break
+        except:
+            # suppress errors on output for camera index out of range
+            break
+
     return camera_indexes
 
 
-def capture_calibration_image(index = 0):
-    # open camera session and save image to file on key press
-    cap = cv.VideoCapture(index)
+def capture_calibration_image(camera_index: int = 0) -> None:
+    """
+    capture calibration image on 'c' keypress, quit on 'q' keypress
+    :param camera_index: index of camera to capture calibration image from
+    :return: none, image is saved to file
+    """
+    cap = cv.VideoCapture(camera_index)
+
     if not cap.isOpened():
         print("Cannot open camera")
-        exit()
 
     while True:
         ret, frame = cap.read()
@@ -42,10 +56,10 @@ def capture_calibration_image(index = 0):
 def main():
     print(cv.__version__)
 
-    # camera_indexes = list_camera_indexes()
-    # print(camera_indexes)
+    camera_indexes = list_camera_indexes()
+    print(camera_indexes)
 
-    capture_calibration_image(0)
+    # capture_calibration_image(0)
 
 
 if __name__ == "__main__":
