@@ -1,7 +1,7 @@
 import cv2 as cv
 
 
-def list_camera_indexes(limit: int = 10) -> list[int]:
+def list_camera_indexes(limit: int = 5) -> list[int]:
     """
     get list of valid indexes of cameras connected
     :param limit: search camera index limit, default value 10
@@ -46,11 +46,20 @@ def capture_calibration_image(camera_index: int = 0) -> None:
             break
 
         if cv.waitKey(1) == ord('c'):
-            cv.imwrite("calib/calibration_frame1.png", frame)
+            cv.imwrite("calib/calibration_frame.png", frame)
             break
 
     cap.release()
     cv.destroyAllWindows()
+
+
+def get_calibration_image(path: str = "calib/calibration_frame.png") -> []:
+    image = cv.imread(path)
+    return image
+
+
+def circle_detection() -> None:
+    print('circle detection function')
 
 
 def main():
@@ -60,6 +69,13 @@ def main():
     print(camera_indexes)
 
     # capture_calibration_image(0)
+
+    calibration_image = get_calibration_image()
+
+    while True:
+        cv.imshow('cal_frame', calibration_image)
+        if cv.waitKey(1) == ord('q'):
+            break
 
 
 if __name__ == "__main__":
